@@ -34,12 +34,12 @@ public class CommandHelper {
         return 1;
     }
     public static int clearAll(CommandContext<CommandSourceStack> context){
-        ClearHelper.clearEntity(context.getSource().getServer());
+        ClearHelper.clearServerEntity(context.getSource().getServer());
         ClearHelper.clearItem(context.getSource().getServer());
         return 1;
     }
     public static int clearEntity(CommandContext<CommandSourceStack> context) {
-        ClearHelper.clearEntity(context.getSource().getServer());
+        ClearHelper.clearServerEntity(context.getSource().getServer());
         return 1;
     }
     public static int clearItem(CommandContext<CommandSourceStack> context) {
@@ -47,7 +47,7 @@ public class CommandHelper {
         return 1;
     }
     public static int clearTrash(CommandContext<CommandSourceStack> context) {
-        TrashBinContainer.slots.clear();
+        TrashBinContainer.SLOTS.clear();
         return 1;
     }
 }

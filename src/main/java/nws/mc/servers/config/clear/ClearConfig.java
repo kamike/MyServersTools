@@ -1,8 +1,11 @@
 package nws.mc.servers.config.clear;
 
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.Entity;
 import nws.dev.core.json._JsonConfig;
 import nws.mc.servers.Servers;
+import nws.mc.servers.helper.EntityHelper;
 
 public class ClearConfig {
     public static final EntityClear ENTITY_CLEAR = new EntityClear();
@@ -54,8 +57,19 @@ public class ClearConfig {
                     }
                     """, new TypeToken<>(){});
         }
-    }
+        public String getMsg(int time){return getDatas().msg.getOrDefault(time,"");}
 
+        public int getEntityLimit(Entity entity){
+            return getDatas().entityLimit.getOrDefault(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString(), getDatas().defaultEntityLimit);
+        }
+        public boolean isInWhiteList(Entity entity){
+            return getDatas().whiteList.contains(EntityHelper.getEntityRegID(entity));
+        }
+        public boolean isInBlackList(Entity entity){
+            return getDatas().blackList.contains(EntityHelper.getEntityRegID(entity));
+        }
+
+    }
     public static class ItemClear extends _JsonConfig<ItemClearData>{
         private static final String file = Servers.ConfigDir_Clear + "item.json";
         public ItemClear() {

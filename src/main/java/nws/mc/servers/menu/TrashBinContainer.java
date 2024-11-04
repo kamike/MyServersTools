@@ -12,12 +12,13 @@ import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
 import nws.mc.servers.config.Language;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
 public class TrashBinContainer extends AbstractContainerMenu {
     public static ServerPlayer nowPlayer = null;
-    public static final HashMap<Integer, ItemStack> slots = new HashMap<>();
+    public static final HashMap<Integer, ItemStack> SLOTS = new HashMap<>();
     private final ItemStackHandler PREV_PAGE_ITEM = new ItemStackHandler();
     private final ItemStackHandler HOME_PAGE_ITEM = new ItemStackHandler();
     private final ItemStackHandler NEXT_PAGE_ITEM = new ItemStackHandler();
@@ -71,8 +72,8 @@ public class TrashBinContainer extends AbstractContainerMenu {
     private void switchPage(int offset) {
         saveItems();
         nowPage += offset;
-        int maxPage = (slots.size() / 45)-1;
-        if (slots.size() % 45 != 0) maxPage++;
+        int maxPage = (SLOTS.size() / 45)-1;
+        if (SLOTS.size() % 45 != 0) maxPage++;
         maxPage = Math.max(0,maxPage);
         if (nowPage < 0) nowPage = maxPage;
         if (nowPage > maxPage) nowPage = 0;
@@ -87,29 +88,18 @@ public class TrashBinContainer extends AbstractContainerMenu {
         int num = itemHandler.getSlots();
         int pageIndex = nowPage * 45;
         for (int i = 0; i < num; i++) {
-            itemHandler.setStackInSlot(i,slots.getOrDefault(pageIndex+i, ItemStack.EMPTY));
+            itemHandler.setStackInSlot(i, SLOTS.getOrDefault(pageIndex+i, ItemStack.EMPTY));
         }
-        /*
-        int start = currentPage * 45;
-        for (int i = 0; i < 45; i++) {
-            if (start + i < itemHandler.getSlots()) {
-                setItem(i,0, itemHandler.getStackInSlot(start + i));
-            } else {
-                setItem(i,0, ItemStack.EMPTY); // 清空多余槽位
-            }
-        }
-
-         */
     }
     private void loadItems() {
         refreshPage();
     }
     public void saveItems() {
-        int num = itemHandler.getSlots();
         int pageIndex = nowPage * 45;
-        for (int i = 0; i < num; i++) {
-            ItemStack stack = itemHandler.getStackInSlot(i);
-            if (!stack.isEmpty()) slots.put(pageIndex + i, itemHandler.getStackInSlot(i));
+        for (int i = 0; i < 45; i++) {
+            //ItemStack stack = itemHandler.getStackInSlot(i);
+            //System.out.println(i+ " stack::"+stack);
+            SLOTS.put(pageIndex + i, itemHandler.getStackInSlot(i));
         }
     }
 
@@ -117,9 +107,33 @@ public class TrashBinContainer extends AbstractContainerMenu {
     public boolean stillValid(Player player) {
         return true;
     }
+
     @Override
-    public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
-        return ItemStack.EMPTY;
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int ind) {
+        //System.out.println("Inventory slot index:"+ind);
+        Slot sourceSlot = slots.get(ind);
+        if (!sourceSlot.hasItem()) return ItemStack.EMPTY;
+
+        ItemStack sourceStack = sourceSlot.getItem();
+        ItemStack copyOfSourceStack = sourceStack.copy();
+        if (ind < 45){
+            if (!moveItemStackTo(sourceStack,54,90,true)){
+                return ItemStack.EMPTY;
+            }
+        }else if (ind < 90){
+            if (!moveItemStackTo(sourceStack,0,45,false)){
+                return ItemStack.EMPTY;
+            }
+        }else {
+            return ItemStack.EMPTY;
+        }
+        if (sourceStack.getCount() == 0){
+            sourceSlot.set(ItemStack.EMPTY);
+        }else {
+            sourceSlot.setChanged();
+        }
+        sourceSlot.onTake(player,sourceStack);
+        return copyOfSourceStack;
     }
     @Override
     public void removed(Player player) {

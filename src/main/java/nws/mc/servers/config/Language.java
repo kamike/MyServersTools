@@ -33,7 +33,7 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
                 }
                 Path outputPath = Paths.get(Servers.ConfigDir_Language+"zh_cn.json");
                 Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
-                System.out.println("File written successfully.");
+                //System.out.println("File written successfully.");
             } catch (IOException e) {
                 LOGGER.error("Failed to write file", e);
             }
@@ -53,6 +53,7 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
         if (!file.exists()) {
             file = new File(Servers.ConfigDir_Language + "en_us.json");
         }
+        //System.out.println("lang:"+ file.getPath());
         return file.getPath();
     }
     public Language() {

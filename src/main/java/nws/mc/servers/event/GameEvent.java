@@ -16,11 +16,13 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import nws.dev.core.math._Math;
 import nws.mc.servers.Servers;
 import nws.mc.servers.config.Config;
 import nws.mc.servers.config.black$list.BlackListConfig;
 import nws.mc.servers.config.clear.ClearConfig;
 import nws.mc.servers.config.msg.MsgConfig;
+import nws.mc.servers.data$type.ClearList;
 import nws.mc.servers.helper.ClearHelper;
 import nws.mc.servers.helper.CommandHelper;
 import nws.mc.servers.helper.MsgHelper;
@@ -65,7 +67,11 @@ public class GameEvent {
     }
     @SubscribeEvent
     public static void regCommand(RegisterCommandsEvent event) {
-        event.getDispatcher().register(Commands.literal("servers")
+        CommandList commandList = new CommandList(event.getDispatcher());
+        commandList.register();
+        /*
+        event.getDispatcher()
+                .register(Commands.literal("servers")
                         .then(Commands.literal("trash")
                                 .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_Player))
                                 .executes(CommandHelper::trash)
@@ -73,58 +79,72 @@ public class GameEvent {
                                         .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
                                         .executes(CommandHelper::clearTrash))
                         )
-                .then(Commands.literal("clear")
-                        .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                        .then(Commands.literal("all")
+                        .then(Commands.literal("clear")
                                 .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                                .executes(CommandHelper::clearAll))
-                        .then(Commands.literal("item")
-                                .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                                .executes(CommandHelper::clearItem))
-                        .then(Commands.literal("entity")
-                                .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                                .executes(CommandHelper::clearEntity))
-                )
-        );
+                                .then(Commands.literal("all")
+                                        .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
+                                        .executes(CommandHelper::clearAll))
+                                .then(Commands.literal("item")
+                                        .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
+                                        .executes(CommandHelper::clearItem))
+                                .then(Commands.literal("entity")
+                                        .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
+                                        .executes(CommandHelper::clearEntity))
+                        )
+                );
+
+         */
     }
 
+    public static int wait = 0;
     @SubscribeEvent
     public static void onJoin(EntityJoinLevelEvent event) {
         if (event.getEntity().level().isClientSide()) return;
+        if (wait > 0) {
+            wait--;
+            return;
+        }
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             if (MsgConfig.firstJoin.getDatas().isEnable()) MsgConfig.firstJoin.send(serverPlayer);
             if (MsgConfig.everyDayJoin.getDatas().isEnable()) MsgConfig.everyDayJoin.send(serverPlayer);
             if (MsgConfig.everyJoin.getDatas().isEnable()) MsgConfig.everyJoin.send(serverPlayer);
         }else if (event.getEntity() instanceof LivingEntity livingEntity){
             if (ClearConfig.ENTITY_CLEAR.getDatas().enable){
-                if (ClearConfig.ENTITY_CLEAR.getDatas().whiteList.contains(BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.getType()).toString())) return;
-                int entityLimit = ClearConfig.ENTITY_CLEAR.getDatas().entityLimit.getOrDefault(BuiltInRegistries.ENTITY_TYPE.getKey(livingEntity.getType()).toString(), ClearConfig.ENTITY_CLEAR.getDatas().defaultEntityLimit);
-                if (entityLimit == 0 || ClearConfig.ENTITY_CLEAR.getDatas().allEntityLimit == 0) {
-                    if (ClearConfig.ENTITY_CLEAR.getDatas().stopSpawn) event.setCanceled(true);
-                    return;
-                }
+                int entityLimit = ClearConfig.ENTITY_CLEAR.getEntityLimit(livingEntity);
+                if (entityLimit == 0 || ClearConfig.ENTITY_CLEAR.getDatas().allEntityLimit == 0) return;
+                if (ClearConfig.ENTITY_CLEAR.isInWhiteList(livingEntity)) return;
                 if (livingEntity.level() instanceof ServerLevel serverLevel){
+                    ClearList clearList = new ClearList();
+                    ClearList allClearList = new ClearList();
+                    int[] count ={0,0,0};
                     Iterable<Entity> entities = serverLevel.getAllEntities();
-                    int all = 0,like = 0;
                     for (Entity entity : entities) {
-                        all++;
+                        if (entity instanceof ServerPlayer) continue;
+                        allClearList.add(entity);
+                        count[0]++;
                         if (entity.getType() == livingEntity.getType()) {
-                            like++;
-                            if (like >= entityLimit) {
-                                MsgHelper.sendServerMsg(serverLevel,ClearConfig.ENTITY_CLEAR.getDatas().LimitClearMsg);
-                                ClearHelper.clearEntity(serverLevel);
-                                MsgHelper.sendServerMsg(serverLevel, ClearConfig.ENTITY_CLEAR.getDatas().msg.getOrDefault(0,""));
-                                if (ClearConfig.ENTITY_CLEAR.getDatas().stopSpawn) event.setCanceled(true);
+                            clearList.add(entity);
+                            if (count[1] >= entityLimit){
+                                count[2] = 1;
                                 break;
                             }
+                            count[1]++;
                         }
-                        if (all >= ClearConfig.ENTITY_CLEAR.getDatas().allEntityLimit) {
-                            MsgHelper.sendServerMsg(serverLevel,ClearConfig.ENTITY_CLEAR.getDatas().LimitClearMsg);
-                            ClearHelper.clearEntity(serverLevel);
-                            MsgHelper.sendServerMsg(serverLevel, ClearConfig.ENTITY_CLEAR.getDatas().msg.getOrDefault(0,""));
-                            if (ClearConfig.ENTITY_CLEAR.getDatas().stopSpawn) event.setCanceled(true);
+                        if (count[0] >= ClearConfig.ENTITY_CLEAR.getDatas().allEntityLimit){
+                            count[2] = 2;
                             break;
                         }
+                    }
+                    if (count[2] == 1) {
+                        if (ClearConfig.ENTITY_CLEAR.getDatas().stopSpawn) event.setCanceled(true);
+                        MsgHelper.sendServerMsg(serverLevel, ClearConfig.ENTITY_CLEAR.getDatas().LimitClearMsg);
+                        MsgHelper.sendServerMsg(serverLevel.getServer(), ClearConfig.ENTITY_CLEAR.getMsg(0), ClearHelper.pullClearCount(clearList.clearEntity()));
+                    }else if (count[2] == 2) {
+                        wait = 200;
+                        if (ClearConfig.ENTITY_CLEAR.getDatas().stopSpawn) event.setCanceled(true);
+                        MsgHelper.sendServerMsg(serverLevel, ClearConfig.ENTITY_CLEAR.getDatas().LimitClearMsg);
+                        MsgHelper.sendServerMsg(serverLevel.getServer(), ClearConfig.ENTITY_CLEAR.getMsg(0), ClearHelper.pullClearCount(allClearList.clearEntityWithCheck()));
+
                     }
                 }
             }
@@ -142,7 +162,7 @@ public class GameEvent {
         if (ClearConfig.ENTITY_CLEAR.getDatas().enable && ClearConfig.ENTITY_CLEAR.getDatas().autoClearTime > 0) {
             if (time >= ClearConfig.ENTITY_CLEAR.getDatas().autoClearTime) {
                 time = 0;
-                ClearHelper.clearEntity(event.getServer());
+                ClearHelper.clearServerEntity(event.getServer());
             } else {
                 int msgIndex = ClearConfig.ENTITY_CLEAR.getDatas().autoClearTime - time;
                 if (ClearConfig.ENTITY_CLEAR.getDatas().msg.containsKey(msgIndex)) {

@@ -7,8 +7,8 @@ import nws.dev.core.system._File;
 
 @Mod(Servers.MOD_ID)
 public class Servers {
-    public static final String MOD_ID = "servers";
-    public static final String ConfigDir = _File.getFileFullPathWithRun("Servers/");
+    public static final String MOD_ID = "neko_server";
+    public static final String ConfigDir = _File.getFileFullPathWithRun("NekoServers/");
     public static final String ConfigDir_Language = ConfigDir + "Lang/";
     public static final String ConfigDir_Msg = ConfigDir + "Msg/";
     public static final String ConfigDir_Clear = ConfigDir + "Clear/";
