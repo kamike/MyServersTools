@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class PlayerGroup {
-    public static final HashMap<String,Group> groups = getGroups();
+public class PlayerGroupConfig {
+    public static final HashMap<String,Group> GROUPS = getGroups();
 
     public static HashMap<String,Group> getGroups() {
         HashMap<String,Group> abc = new HashMap<>();

@@ -1,7 +1,7 @@
 package nws.mc.servers.helper;
 
 import net.minecraft.server.level.ServerPlayer;
-import nws.mc.servers.config.player$group.PlayerGroup;
+import nws.mc.servers.config.player$group.PlayerGroupConfig;
 
 import java.util.List;
 
@@ -21,8 +21,8 @@ public class PlayerHelper {
                 has[0] = true;
                 return;
             }
-            if (PlayerGroup.groups.containsKey(s)) {
-                has[0] = checkPlayer(player, PlayerGroup.groups.get(s).getDatas());
+            if (PlayerGroupConfig.GROUPS.containsKey(s)) {
+                has[0] = checkPlayer(player, PlayerGroupConfig.GROUPS.get(s).getDatas());
             }
         });
         return has[0];
@@ -30,9 +30,9 @@ public class PlayerHelper {
     public static boolean checkPlayer(ServerPlayer player, String s) {
         if (s.equals(player.getStringUUID())) return true;
         if (s.equals(player.getName().getString())) return true;
-        if (PlayerGroup.groups.containsKey(s)) {
+        if (PlayerGroupConfig.GROUPS.containsKey(s)) {
             boolean[] has = {false};
-            PlayerGroup.groups.get(s).getDatas().forEach(s1 -> {
+            PlayerGroupConfig.GROUPS.get(s).getDatas().forEach(s1 -> {
                 has[0] = checkPlayer(player, s1);
             });
             return has[0];

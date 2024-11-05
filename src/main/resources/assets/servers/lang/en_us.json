@@ -1,4 +1,10 @@
 {
+  "ban.item.deny": "Banned items cleared",
+  "login.menu.button.clear": "Clear",
+  "login.menu.button.login": "Login",
+  "login.menu.title": "Please input password",
+  "login.success": "Login successful",
+  "login.failed": "Login failed",
   "trash.command.error.cleaning": "Cleaning up now. Please wait.",
   "trash.command.error.has_player": "A player is checking the trash, please wait.",
   "trash.menu.title": "Trash Bin",
@@ -21,5 +27,12 @@
   "clear.normal.9":"clear in 9 second",
   "clear.normal.10":"clear in 10 second",
   "clear.normal.30":"clear in 30 second",
-  "clear.normal.60":"clear in 60 second"
+  "clear.normal.60":"clear in 60 second",
+  "reload.success.all":"Reload all config successfully.",
+  "reload.success.config":"Reload config successfully.",
+  "reload.success.player_group":"Reload player group successfully.",
+  "reload.success.clear":"Reload clear successfully.",
+  "reload.success.msg":"Reload msg successfully.",
+  "reload.success.black_list":"Reload black list successfully.",
+  "reload.success.language":"Reload language successfully."
 }

@@ -21,12 +21,17 @@ import java.util.Locale;
 public class Language extends _JsonConfig<HashMap<String, String>> {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final String filePath = getLanguage();
-    public static final Language I = new Language();
+    public static final Language Default = new Language(Servers.ConfigDir_Language + "default.json",true);
+    public static final Language I = new Language(filePath,false);
+
 
     public static void reSet() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String[] langs = {"zh_cn"};
         for (String lang : langs) {
+            if (new File(Servers.ConfigDir_Language + lang + ".json").exists()) {
+                continue;
+            }
             try (InputStream inputStream = classLoader.getResourceAsStream("assets/servers/lang/" + lang + ".json")) {
                 if (inputStream == null) {
                     throw new FileNotFoundException("Resource not found: assets/servers/lang/" + lang + ".json");
@@ -56,9 +61,15 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
         //System.out.println("lang:"+ file.getPath());
         return file.getPath();
     }
-    public Language() {
+    public Language( String filePath,boolean r) {
         super(filePath, """
                 {
+                    "ban.item.deny": "Banned items cleared",
+                    "login.menu.button.clear": "Clear",
+                    "login.menu.button.login": "Login",
+                    "login.menu.title": "Please input password",
+                    "login.success": "Login successful",
+                    "login.failed": "Login failed",
                     "trash.command.error.cleaning": "Cleaning up now. Please wait.",
                     "trash.command.error.has_player": "A player is checking the trash, please wait.",
                     "trash.menu.title": "Trash Bin",
@@ -81,16 +92,23 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
                     "clear.normal.9":"clear in 9 second",
                     "clear.normal.10":"clear in 10 second",
                     "clear.normal.30":"clear in 30 second",
-                    "clear.normal.60":"clear in 60 second"
+                    "clear.normal.60":"clear in 60 second",
+                    "reload.success.all":"Reload all config successfully.",
+                    "reload.success.config":"Reload config successfully.",
+                    "reload.success.player_group":"Reload player group successfully.",
+                    "reload.success.clear":"Reload clear successfully.",
+                    "reload.success.msg":"Reload msg successfully.",
+                    "reload.success.black_list":"Reload black list successfully.",
+                    "reload.success.language":"Reload language successfully."
                 }
-                """, new TypeToken<>(){});
+                """, new TypeToken<>(){},r);
     }
 
     public static String get(String key) {
         return getOrDefault(key, key);
     }
     public static String getOrDefault(String key, String def) {
-        return I.getDatas().getOrDefault(key,def);
+        return I.getDatas().getOrDefault(key,Default.getDatas().getOrDefault(key,def));
     }
     public static Component getComponent(String key) {
         return Component.literal(get(key));

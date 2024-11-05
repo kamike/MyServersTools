@@ -60,6 +60,7 @@ public class TrashBinContainer extends AbstractContainerMenu {
         this.addSlot(new SlotButton(X, 0, 116, 142, null));
         this.addSlot(new SlotButton(X, 0, 134, 142, null));
         this.addSlot(new SlotButton(NEXT_PAGE_ITEM, 0, 152, 142, player -> switchPage(1)));
+
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 this.addSlot(new Slot(playerInventory, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
