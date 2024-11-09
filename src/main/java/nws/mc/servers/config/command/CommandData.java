@@ -1,0 +1,13 @@
+package nws.mc.servers.config.command;
+
+public class CommandData {
+    public boolean home;
+    public boolean setHome;
+    public boolean back;
+    public int backMaxCount;
+    public boolean tpa;
+    public boolean tpaAccept;
+    public boolean tpaDeny;
+    public boolean reward;
+    public boolean trash;
+}

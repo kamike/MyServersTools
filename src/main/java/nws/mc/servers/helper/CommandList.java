@@ -18,11 +18,14 @@ public class CommandList {
         commands = new ArrayList<>();
 
         //commands.add(CommandData.create(CommandHelper::login,root,"login"));
+        commands.add(CommandData.create(CommandHelper::reward,root,"reward"));
         commands.add(CommandData.create(CommandHelper::clearAll,root,"clear","all"));
         commands.add(CommandData.create(CommandHelper::clearItem,root,"clear","item"));
         commands.add(CommandData.create(CommandHelper::clearEntity,root,"clear","entity"));
         commands.add(CommandData.create(CommandData.Permission_Player,CommandHelper::trash,root,"trash"));
         commands.add(CommandData.create(CommandHelper::clearTrash,root,"trash","clear"));
+
+
         commands.add(CommandData.create(CommandHelper::reload,root,"reload","all"));
         commands.add(CommandData.create(CommandHelper::reloadConfig,root,"reload","config"));
         commands.add(CommandData.create(CommandHelper::reloadPlayerGroup,root,"reload","player_group"));
@@ -30,6 +33,15 @@ public class CommandList {
         commands.add(CommandData.create(CommandHelper::reloadMsg,root,"reload","msg"));
         commands.add(CommandData.create(CommandHelper::reloadLanguage,root,"reload","language"));
         commands.add(CommandData.create(CommandHelper::reloadBlackList,root,"reload","blacklist"));
+        commands.add(CommandData.create(CommandHelper::reloadBanItem,root,"reload","ban_item"));
+        commands.add(CommandData.create(CommandHelper::reloadReward,root,"reload","reward"));
+
+
+        commands.add(CommandData.create(CommandHelper::setHome,"setHome"));
+        commands.add(CommandData.create(CommandHelper::home,"home"));
+        commands.add(CommandData.create(CommandHelper::back,"back"));
+        commands.add(CommandData.create(CommandHelper::tpaAccept,"tpaAccept"));
+        commands.add(CommandData.create(CommandHelper::tpaDeny,"tpaDeny"));
 
 
     }

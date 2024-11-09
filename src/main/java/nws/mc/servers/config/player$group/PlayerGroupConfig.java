@@ -3,6 +3,7 @@ package nws.mc.servers.config.player$group;
 import com.google.gson.reflect.TypeToken;
 import nws.dev.core.json._JsonConfig;
 import nws.mc.servers.Servers;
+import nws.mc.servers.helper._F;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -16,31 +17,12 @@ public class PlayerGroupConfig {
 
     public static HashMap<String,Group> getGroups() {
         HashMap<String,Group> abc = new HashMap<>();
-        List<Path> jsonFiles = getFiles(Servers.ConfigDir_PlayerGroup,".json");
+        List<Path> jsonFiles = _F.getFiles(Servers.ConfigDir_PlayerGroup,".json");
         for (Path path : jsonFiles) {
             String fileName = path.getFileName().toString();
-            //System.out.println("fileName:"+fileName+"path:"+path.toString());
             abc.put(fileName,new Group(path.toString()));
         }
         return abc;
-    }
-    private static List<Path> getFiles(String directoryPath, String suffix) {
-        List<Path> jsonFiles = new ArrayList<>();
-        Path startPath = Paths.get(directoryPath);
-        try {
-            Files.walkFileTree(startPath, new SimpleFileVisitor<>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    if (file.toString().endsWith(suffix)) {
-                        jsonFiles.add(file);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return jsonFiles;
     }
 
     public static class Group extends _JsonConfig<List<String>> {

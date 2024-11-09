@@ -16,6 +16,8 @@ public class Servers {
     public static final String ConfigDir_BlackList = ConfigDir + "BlackList/";
     public static final String ConfigDir_JavaScript = ConfigDir + "JavaScript/";
     public static final String ConfigDir_Login = ConfigDir + "Login/";
+    public static final String ConfigDir_Data = ConfigDir + "Data/";
+    public static final String ConfigDir_PlayerData = ConfigDir_Data + "Player/";
     public Servers(IEventBus modEventBus, ModContainer modContainer) {
         _File.checkAndCreateDir(ConfigDir);
         _File.checkAndCreateDir(ConfigDir_Language);
@@ -25,5 +27,7 @@ public class Servers {
         _File.checkAndCreateDir(ConfigDir_BlackList);
         _File.checkAndCreateDir(ConfigDir_JavaScript);
         _File.checkAndCreateDir(ConfigDir_Login);
+        _File.checkAndCreateDir(ConfigDir_Data);
+        _File.checkAndCreateDir(ConfigDir_PlayerData);
     }
 }

@@ -49,28 +49,52 @@ public class MsgHelper {
         map.forEach((s, s2) -> M[0] = M[0].replace(s, s2));
         sendMsgToPlayer(serverPlayer,M[0]);
     }
-
     private static void sendMsgToPlayer(ServerPlayer serverPlayer, String msg){
         if (msg.isEmpty()) return;
-        msg = MsgHelper.format(serverPlayer,msg);
+        msg = MsgHelper.format(serverPlayer,msg,new HashMap<>());
+        if (msg.isEmpty()) return;
         serverPlayer.sendSystemMessage(Component.literal(msg));
         //serverPlayer.connection.sendDisguisedChatMessage(Component.literal(msg), ChatType.bind(ChatType.SAY_COMMAND,serverPlayer));
     }
-    private static String format(ServerPlayer player, String msg) {
+    private static String format(ServerPlayer player, String msg,HashMap<String, Object> map) {
         if (msg.toLowerCase().endsWith(".js")) {
-            Object result = _EasyJS.creat()
-                    .addParameter("player",player)
-                    .runFile(Servers.ConfigDir_JavaScript+msg);
+            _EasyJS easyJS = _EasyJS.creat();
+            easyJS.addParameter("player", player);
+            map.forEach(easyJS::addParameter);
+            Object result = easyJS.runFile(Servers.ConfigDir_JavaScript+msg);
             if (result != null){
                 return result.toString();
             }
-            return "error js: "+msg;
+            // "error js: "+msg;
+            return "";
         }else {
+            if (!map.isEmpty()) {
+                String[] m = {msg};
+                map.forEach((s, o) -> {
+                    if (o instanceof String s1) m[0] = m[0].replace(s, s1);
+                    else if (o instanceof Number n) m[0] = m[0].replace(s, n.toString());
+                });
+                msg = m[0];
+            }
             msg = msg.replace("$player.name", player.getName().getString());
             msg = msg.replace("$player.health", _FormatToString.formatValue(player.getHealth(), 2));
             msg = msg.replace("$player.maxHealth", _FormatToString.formatValue(player.getMaxHealth(), 2));
             msg = msg.replace("$player.expLevel", _FormatToString.formatValue(player.experienceLevel, 2));
             return msg;
         }
+    }
+
+
+
+
+    public static void sendWithArgs(ServerPlayer serverPlayer, String msg, HashMap<String, Object> map){
+        if (msg.isEmpty()) return;
+        msg = MsgHelper.format(serverPlayer,msg,map);
+        if (msg.isEmpty()) return;
+        serverPlayer.sendSystemMessage(Component.literal(msg));
+    }
+    public static void sendWithArgs(MinecraftServer server, String msg, HashMap<String, Object> map){
+        if (msg.isEmpty()) return;
+        server.getPlayerList().getPlayers().forEach(serverPlayer -> MsgHelper.sendWithArgs(serverPlayer,msg,map));
     }
 }

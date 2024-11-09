@@ -1,28 +1,25 @@
 package nws.mc.servers.event;
 
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import nws.mc.servers.Servers;
-import nws.mc.servers.config.ban$item.BanItemConfig;
 import nws.mc.servers.config.clear.ClearConfig;
-import nws.mc.servers.config.msg.MsgConfig;
+import nws.mc.servers.config.command.CommandConfig;
+import nws.mc.servers.config.player$data.PlayerData;
 import nws.mc.servers.data$type.ClearList;
-import nws.mc.servers.helper.BanItemHelper;
-import nws.mc.servers.helper.ClearHelper;
-import nws.mc.servers.helper.CommandList;
-import nws.mc.servers.helper.MsgHelper;
+import nws.mc.servers.helper.*;
 
 //@OnlyIn(Dist.DEDICATED_SERVER)
 @EventBusSubscriber(modid = Servers.MOD_ID,bus = EventBusSubscriber.Bus.GAME)
@@ -40,11 +37,15 @@ public class GameEvent {
         }
     }
 
-
     @SubscribeEvent
     public static void regCommand(RegisterCommandsEvent event) {
         CommandList commandList = new CommandList(event.getDispatcher());
         commandList.register();
+        event.getDispatcher()
+                .register(Commands.literal("tpa")
+                        .then(Commands.argument("player",EntityArgument.player())
+                                .executes(context -> CommandHelper.tpa(context, EntityArgument.getPlayer(context, "player")))));
+
         /*
         event.getDispatcher()
                 .register(Commands.literal("servers")
@@ -84,11 +85,7 @@ public class GameEvent {
             wait--;
             return;
         }
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            if (MsgConfig.firstJoin.getDatas().isEnable()) MsgConfig.firstJoin.send(serverPlayer);
-            if (MsgConfig.everyDayJoin.getDatas().isEnable()) MsgConfig.everyDayJoin.send(serverPlayer);
-            if (MsgConfig.everyJoin.getDatas().isEnable()) MsgConfig.everyJoin.send(serverPlayer);
-        }else if (event.getEntity() instanceof LivingEntity livingEntity){
+        if (event.getEntity() instanceof LivingEntity livingEntity){
             if (ClearConfig.ENTITY_CLEAR.getDatas().enable){
                 int entityLimit = ClearConfig.ENTITY_CLEAR.getEntityLimit(livingEntity);
                 if (entityLimit == 0 || ClearConfig.ENTITY_CLEAR.getDatas().allEntityLimit == 0) return;
@@ -127,6 +124,15 @@ public class GameEvent {
 
                     }
                 }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDeath(LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
+            if (CommandConfig.I.getDatas().back){
+                PlayerData.get(serverPlayer.getStringUUID()).addBack(serverPlayer);
             }
         }
     }
