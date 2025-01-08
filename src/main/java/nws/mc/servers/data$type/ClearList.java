@@ -1,7 +1,6 @@
 package nws.mc.servers.data$type;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobCategory;
@@ -9,7 +8,6 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.npc.Npc;
-import net.minecraft.world.level.Level;
 import nws.mc.servers.config.clear.ClearConfig;
 
 import java.util.ArrayList;

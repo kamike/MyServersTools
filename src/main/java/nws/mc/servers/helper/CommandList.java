@@ -4,13 +4,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import nws.mc.servers.config.command.CommandConfig;
 import nws.mc.servers.data$type.CommandData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CommandList {
-    private static final String root = "servers";
+    private static final String root = CommandConfig.I.getDatas().commandRoot;
     public List<CommandData> commands;
     private final CommandDispatcher<CommandSourceStack> dispatcher;
     public CommandList(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -18,7 +19,7 @@ public class CommandList {
         commands = new ArrayList<>();
 
         //commands.add(CommandData.create(CommandHelper::login,root,"login"));
-        commands.add(CommandData.create(CommandHelper::reward,root,"reward"));
+        commands.add(CommandData.create(CommandData.Permission_Player,CommandHelper::reward,root,"reward"));
         commands.add(CommandData.create(CommandHelper::clearAll,root,"clear","all"));
         commands.add(CommandData.create(CommandHelper::clearItem,root,"clear","item"));
         commands.add(CommandData.create(CommandHelper::clearEntity,root,"clear","entity"));
@@ -37,11 +38,11 @@ public class CommandList {
         commands.add(CommandData.create(CommandHelper::reloadReward,root,"reload","reward"));
 
 
-        commands.add(CommandData.create(CommandHelper::setHome,"setHome"));
-        commands.add(CommandData.create(CommandHelper::home,"home"));
-        commands.add(CommandData.create(CommandHelper::back,"back"));
-        commands.add(CommandData.create(CommandHelper::tpaAccept,"tpaAccept"));
-        commands.add(CommandData.create(CommandHelper::tpaDeny,"tpaDeny"));
+        commands.add(CommandData.create(CommandData.Permission_Player,CommandHelper::setHome,"setHome"));
+        commands.add(CommandData.create(CommandData.Permission_Player,CommandHelper::home,"home"));
+        commands.add(CommandData.create(CommandData.Permission_Player,CommandHelper::back,"back"));
+        commands.add(CommandData.create(CommandData.Permission_Player,CommandHelper::tpaAccept,"tpaAccept"));
+        commands.add(CommandData.create(CommandData.Permission_Player,CommandHelper::tpaDeny,"tpaDeny"));
 
 
     }

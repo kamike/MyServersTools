@@ -21,8 +21,8 @@ public class PD {
 
     public @Nullable PosData getBack() {
         if (backs == null || backs.isEmpty()) return null;
-        PosData pd = backs.getFirst().copy();
-        backs.removeFirst();
+        PosData pd = backs.getLast().copy();
+        backs.removeLast();
         return pd;
     }
 

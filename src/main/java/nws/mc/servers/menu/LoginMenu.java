@@ -15,11 +15,20 @@ import nws.mc.servers.helper.LoginHelper;
 public class LoginMenu extends AbstractContainerMenu {
     private final ItemStackHandler itemHandler;
     private final ServerPlayer serverPlayer;
-    private final int[] inputSlots = {
+    private static final int[] inputSlots = {
             12,13,14,
             21,22,23,
-            30,31,32
+            30,31,32,
+            39,40,41
     };
+    /*
+     * 0   1  2  3  4  5  6  7  8
+     * 9  10 11 12 13 14 15 16 17
+     * 18 19 20 21 22 23 24 25 26
+     * 27 28 29 30 31 32 33 34 35
+     * 36 37 38 39 40 41 42 43 44
+     */
+    private boolean isInput = false;
     public LoginMenu(int pContainerId, ServerPlayer serverPlayer) {
         super(MenuType.GENERIC_9x6, pContainerId);
         this.serverPlayer = serverPlayer;
@@ -34,15 +43,15 @@ public class LoginMenu extends AbstractContainerMenu {
         }
         itemStack = new ItemStack(Items.BREEZE_ROD);
         itemStack.set(DataComponents.CUSTOM_NAME, Language.getComponent("login.menu.button.clear"));
-        itemHandler.setStackInSlot(39,itemStack);
+        itemHandler.setStackInSlot(inputSlots[9],itemStack);
 
         itemStack = new ItemStack(Items.ENDER_PEARL);
         itemStack.set(DataComponents.CUSTOM_NAME, Language.getComponent("0"));
-        itemHandler.setStackInSlot(40,itemStack);
+        itemHandler.setStackInSlot(inputSlots[10],itemStack);
 
         itemStack = new ItemStack(Items.BLAZE_ROD);
         itemStack.set(DataComponents.CUSTOM_NAME, Language.getComponent("login.menu.button.login"));
-        itemHandler.setStackInSlot(41,itemStack);
+        itemHandler.setStackInSlot(inputSlots[11],itemStack);
         addSlots();
     }
     private void addSlots(){
@@ -55,6 +64,8 @@ public class LoginMenu extends AbstractContainerMenu {
     }
 
     private void input(ItemStack stack) {
+        if (isInput || LoginHelper.isLogin(serverPlayer)) return;
+        isInput = true;
         if (stack.getItem() == Items.ENDER_EYE || stack.getItem() == Items.ENDER_PEARL) {
             Component name = stack.get(DataComponents.CUSTOM_NAME);
             for (int i = 0; i < 9; i++) {
@@ -65,6 +76,7 @@ public class LoginMenu extends AbstractContainerMenu {
                     break;
                 }
             }
+            isInput = false;
             return;
         }
         if (stack.getItem() == Items.BREEZE_ROD) {
@@ -94,7 +106,7 @@ public class LoginMenu extends AbstractContainerMenu {
                 error();
             }
         }
-
+        isInput = false;
     }
     public void error(){
         for (int j = 8; j >= 0; j--) {

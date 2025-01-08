@@ -13,7 +13,6 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import nws.mc.servers.Servers;
 import nws.mc.servers.config.clear.ClearConfig;
 import nws.mc.servers.config.command.CommandConfig;
@@ -25,18 +24,12 @@ import nws.mc.servers.helper.*;
 @EventBusSubscriber(modid = Servers.MOD_ID,bus = EventBusSubscriber.Bus.GAME)
 public class GameEvent {
     @SubscribeEvent
-    public static void onStart(ServerStartedEvent event){
-        //tt.start();
-    }
-
-    @SubscribeEvent
     public static void onPickup(ItemEntityPickupEvent.Pre event){
-        if (BanItemHelper.checkItemAndSend(event.getItemEntity())) {
+        if (!event.getItemEntity().level().isClientSide() && BanItemHelper.checkItemAndSend(event.getItemEntity())) {
             event.getItemEntity().discard();
             event.setCanPickup(TriState.FALSE);
         }
     }
-
     @SubscribeEvent
     public static void regCommand(RegisterCommandsEvent event) {
         CommandList commandList = new CommandList(event.getDispatcher());
@@ -45,32 +38,6 @@ public class GameEvent {
                 .register(Commands.literal("tpa")
                         .then(Commands.argument("player",EntityArgument.player())
                                 .executes(context -> CommandHelper.tpa(context, EntityArgument.getPlayer(context, "player")))));
-
-        /*
-        event.getDispatcher()
-                .register(Commands.literal("servers")
-                        .then(Commands.literal("trash")
-                                .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_Player))
-                                .executes(CommandHelper::trash)
-                                .then(Commands.literal("clear")
-                                        .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                                        .executes(CommandHelper::clearTrash))
-                        )
-                        .then(Commands.literal("clear")
-                                .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                                .then(Commands.literal("all")
-                                        .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                                        .executes(CommandHelper::clearAll))
-                                .then(Commands.literal("item")
-                                        .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                                        .executes(CommandHelper::clearItem))
-                                .then(Commands.literal("entity")
-                                        .requires(commandSourceStack -> commandSourceStack.hasPermission(Permission_OP))
-                                        .executes(CommandHelper::clearEntity))
-                        )
-                );
-
-         */
     }
     public static int wait = 0;
     @SubscribeEvent

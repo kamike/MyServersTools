@@ -8,13 +8,6 @@ import nws.mc.servers.Servers;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -25,29 +18,7 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
     public static final Language I = new Language(filePath,false);
 
 
-    public static void reSet() {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        String[] langs = {"zh_cn"};
-        for (String lang : langs) {
-            if (new File(Servers.ConfigDir_Language + lang + ".json").exists()) {
-                continue;
-            }
-            try (InputStream inputStream = classLoader.getResourceAsStream("assets/servers/lang/" + lang + ".json")) {
-                if (inputStream == null) {
-                    throw new FileNotFoundException("Resource not found: assets/servers/lang/" + lang + ".json");
-                }
-                Path outputPath = Paths.get(Servers.ConfigDir_Language+"zh_cn.json");
-                Files.copy(inputStream, outputPath, StandardCopyOption.REPLACE_EXISTING);
-                //System.out.println("File written successfully.");
-            } catch (IOException e) {
-                LOGGER.error("Failed to write file", e);
-            }
-        }
-    }
-
-
     public static String getLanguage() {
-        reSet();
         String lang = Config.I.getDatas().lang;
         if (lang.equals("auto")) {
             Locale defaultLocale = Locale.getDefault();
@@ -55,14 +26,13 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
         }
         lang = lang.toLowerCase();
         File file = new File(Servers.ConfigDir_Language + lang + ".json");
-        if (!file.exists()) {
-            file = new File(Servers.ConfigDir_Language + "en_us.json");
-        }
-        //System.out.println("lang:"+ file.getPath());
+        if (!file.exists()) return Servers.ConfigDir_Language + "en_us.json";
         return file.getPath();
     }
+
+
     public Language( String filePath,boolean r) {
-        super(filePath, """
+        this(filePath, """
                 {
                     "command.tpa_deny.failed":"Tpa deny failed",
                     "command.tpa_deny.success":"Tpa deny successfully",
@@ -70,7 +40,9 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
                     "command.tpa_accept.success":"Tpa accept successfully",
                     "command.tpa.failed":"Tpa failed",
                     "command.tpa.success":"Tpa successfully",
-                    "command.tpa.msg":"$tpa.send.player Tpa You",
+                    "command.tpa.msg":"TpaRequest.js",
+                    "command.tpa.msg.tip":" sent you a TPA request.",
+                    "command.tpa.msg.accept":"[Click here to agree]",
                     "command.back.failed":"Back failed",
                     "command.back.success":"Back successfully",
                     "command.home.failed":"Back home failed",
@@ -112,9 +84,19 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
                     "reload.success.clear":"Reload clear successfully.",
                     "reload.success.msg":"Reload msg successfully.",
                     "reload.success.black_list":"Reload black list successfully.",
-                    "reload.success.language":"Reload language successfully."
+                    "reload.success.language":"Reload language successfully.",
+                    "get_server_info.command.listen.failed": "Get server info failed",
+                    "get_help.command.listen.help":"-----help-----",
+                    "get_server_info.command.listen.info":"-----info-----",
+                    "get_server_info.command.listen.host":"host",
+                    "get_server_info.command.listen.port":"port",
+                    "get_server_info.command.listen.description":"description",
+                    "get_server_info.command.listen.version":"version"
                 }
-                """, new TypeToken<>(){},r);
+                """,r);
+    }
+    public Language(String filePath,String data,boolean r) {
+        super(filePath,data, new TypeToken<>(){},r);
     }
 
     public static String get(String key) {
@@ -129,4 +111,6 @@ public class Language extends _JsonConfig<HashMap<String, String>> {
     public static Component getComponentOrDefault(String key, String def) {
         return Component.literal(getOrDefault(key,def));
     }
+
+
 }

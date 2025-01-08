@@ -5,7 +5,9 @@
   "command.tpa_accept.success":"Tpa accept successfully",
   "command.tpa.failed":"Tpa failed",
   "command.tpa.success":"Tpa successfully",
-  "command.tpa.msg":"$tpa.send.player Tpa You",
+  "command.tpa.msg":"TpaRequest.js",
+  "command.tpa.msg.tip":" sent you a TPA request.",
+  "command.tpa.msg.accept":"[Click here to agree]",
   "command.back.failed":"Back failed",
   "command.back.success":"Back successfully",
   "command.home.failed":"Back home failed",
@@ -47,5 +49,11 @@
   "reload.success.clear":"Reload clear successfully.",
   "reload.success.msg":"Reload msg successfully.",
   "reload.success.black_list":"Reload black list successfully.",
-  "reload.success.language":"Reload language successfully."
+  "reload.success.language":"Reload language successfully.",
+  "get_server_info.command.listen.failed": "Get server info failed",
+  "get_server_info.command.listen.info":"-----info-----",
+  "get_server_info.command.listen.host":"host",
+  "get_server_info.command.listen.port":"port",
+  "get_server_info.command.listen.description":"description",
+  "get_server_info.command.listen.version":"version"
 }

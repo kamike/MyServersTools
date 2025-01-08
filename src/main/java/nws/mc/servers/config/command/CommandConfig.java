@@ -10,6 +10,7 @@ public class CommandConfig extends _JsonConfig<CommandData> {
     public CommandConfig() {
         super(filePath, """
                 {
+                    "commandRoot": "servers",
                     "home": true,
                     "setHome": true,
                     "back": true,

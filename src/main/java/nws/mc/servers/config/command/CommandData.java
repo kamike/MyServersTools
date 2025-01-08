@@ -1,6 +1,7 @@
 package nws.mc.servers.config.command;
 
 public class CommandData {
+    public String commandRoot;
     public boolean home;
     public boolean setHome;
     public boolean back;

@@ -19,19 +19,19 @@ public class MsgHelper {
         return map;
     }
     public static void sendServerMsg(MinecraftServer server, String msg){
-        if (msg.isEmpty()) return;
+        if (msg.isEmpty() || server == null) return;
         String M = Language.getOrDefault(msg, msg);
         server.getPlayerList().getPlayers().forEach(serverPlayer -> MsgHelper.sendMsgToPlayer(serverPlayer,M));
     }
 
     public static void sendServerMsg(MinecraftServer server, String msg, HashMap<String, String> map){
-        if (msg.isEmpty()) return;
+        if (msg.isEmpty() || server == null) return;
         String[] M = {Language.getOrDefault(msg, msg)};
         map.forEach((s, s2) -> M[0] = M[0].replace(s, s2));
         server.getPlayerList().getPlayers().forEach(serverPlayer -> MsgHelper.sendMsgToPlayer(serverPlayer,M[0]));
     }
     public static void sendServerMsg(ServerLevel serverLevel, String msg){
-        if (msg.isEmpty())return;
+        if (msg.isEmpty()  || serverLevel == null)return;
         sendServerMsg(serverLevel.getServer(),msg);
         //serverLevel.getServer().getPlayerList().getPlayers().forEach(serverPlayer -> MsgHelper.sendServerMsg(serverPlayer,msg));
     }

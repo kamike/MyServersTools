@@ -2,12 +2,10 @@ package nws.mc.servers.config.player$group;
 
 import com.google.gson.reflect.TypeToken;
 import nws.dev.core.json._JsonConfig;
+import nws.dev.core.system._File;
 import nws.mc.servers.Servers;
-import nws.mc.servers.helper._F;
 
-import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +15,7 @@ public class PlayerGroupConfig {
 
     public static HashMap<String,Group> getGroups() {
         HashMap<String,Group> abc = new HashMap<>();
-        List<Path> jsonFiles = _F.getFiles(Servers.ConfigDir_PlayerGroup,".json");
+        List<Path> jsonFiles = _File.getFiles(Servers.ConfigDir_PlayerGroup,".json");
         for (Path path : jsonFiles) {
             String fileName = path.getFileName().toString();
             abc.put(fileName,new Group(path.toString()));
