@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import nws.mc.servers.config.Language;
+import nws.mc.servers.config.login.LoginConfig;
 import nws.mc.servers.helper.LoginHelper;
 
 public class LoginMenu extends AbstractContainerMenu {
@@ -68,7 +69,8 @@ public class LoginMenu extends AbstractContainerMenu {
         isInput = true;
         if (stack.getItem() == Items.ENDER_EYE || stack.getItem() == Items.ENDER_PEARL) {
             Component name = stack.get(DataComponents.CUSTOM_NAME);
-            for (int i = 0; i < 9; i++) {
+            int maxLength = LoginConfig.INSTANCE.getDatas().maxPasswordLength;
+            for (int i = 0; i < maxLength; i++) {
                 if (itemHandler.getStackInSlot(i).isEmpty()) {
                     ItemStack itemStack = new ItemStack(Items.NETHER_STAR);
                     itemStack.set(DataComponents.CUSTOM_NAME, name);
@@ -80,27 +82,34 @@ public class LoginMenu extends AbstractContainerMenu {
             return;
         }
         if (stack.getItem() == Items.BREEZE_ROD) {
-            for (int i = 8; i >= 0; i--) {
+            int maxLength = LoginConfig.INSTANCE.getDatas().maxPasswordLength;
+            for (int i = maxLength - 1; i >= 0; i--) {
                 if (!itemHandler.getStackInSlot(i).isEmpty()) {
                     itemHandler.setStackInSlot(i, ItemStack.EMPTY);
                 }
             }
         } else if (stack.getItem() == Items.BLAZE_ROD) {
             StringBuilder p = new StringBuilder();
-            boolean f = true;
-            for (int i = 0; i < 9; i++) {
+            int minLength = LoginConfig.INSTANCE.getDatas().minPasswordLength;
+            int maxLength = LoginConfig.INSTANCE.getDatas().maxPasswordLength;
+            int passwordLength = 0;
+            
+            // 计算实际输入的密码长度
+            for (int i = 0; i < maxLength; i++) {
                 ItemStack itemStack = itemHandler.getStackInSlot(i);
                 if (itemStack.getItem() == Items.NETHER_STAR) {
                     Component name = itemStack.get(DataComponents.CUSTOM_NAME);
                     if (name != null) {
                         p.append(name.getString());
+                        passwordLength++;
                     }
                 } else {
-                    f = false;
                     break;
                 }
             }
-            if (f && LoginHelper.Login(serverPlayer, p.toString())) {
+            
+            // 检查密码长度是否在允许范围内
+            if (passwordLength >= minLength && passwordLength <= maxLength && LoginHelper.Login(serverPlayer, p.toString())) {
                 serverPlayer.closeContainer();
             } else {
                 error();
@@ -109,7 +118,8 @@ public class LoginMenu extends AbstractContainerMenu {
         isInput = false;
     }
     public void error(){
-        for (int j = 8; j >= 0; j--) {
+        int maxLength = LoginConfig.INSTANCE.getDatas().maxPasswordLength;
+        for (int j = maxLength - 1; j >= 0; j--) {
             itemHandler.setStackInSlot(j, new ItemStack(Items.BARRIER));
         }
     }

@@ -7,6 +7,8 @@ public class LoginData {
     public String success;
     public String fail;
     public int time;
+    public int minPasswordLength;
+    public int maxPasswordLength;
     private HashMap<String, String> passwords;
 
     public HashMap<String, String> getPasswords() {

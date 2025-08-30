@@ -16,6 +16,8 @@ public class LoginConfig extends _JsonConfig<LoginData> {
                     "time": 1200,
                     "success": "login.success",
                     "fail": "login.failed",
+                    "minPasswordLength": 6,
+                    "maxPasswordLength": 9,
                     "password": {}
                 }
                 """, new TypeToken<>(){});
