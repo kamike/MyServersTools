@@ -1,8 +1,10 @@
 pluginManagement {
     repositories {
-        mavenLocal()
+        mavenLocal()  // 优先使用本地仓库
         gradlePluginPortal()
         maven { url = 'https://maven.neoforged.net/releases' }
+        maven { url = 'https://maven.minecraftforge.net/' }
+        mavenCentral()
     }
 }
 
