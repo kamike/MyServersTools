@@ -103,7 +103,8 @@ configurations {
 dependencies {
     implementation "net.neoforged:neoforge:${neo_version}"
 
-    libraries "nws.dev:core:$core_version"
+    implementation files('libs/core-25.01.0400.jar')
+    libraries files('libs/core-25.01.0400.jar')
     //compileOnly "nws.dev:core:$core_version"
     //implementation "nws.mc:cores:$cores_version:neo-all"
     jarJar(group:'nws.dev', name:'core', version:"[$core_version,)")
@@ -151,6 +152,12 @@ publishing {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+}
+
+tasks.named('jar', Jar).configure {
+    from('libs/core-25.01.0400.jar') {
+        into 'META-INF/libraries'
+    }
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.

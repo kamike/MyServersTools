@@ -13,7 +13,7 @@ public class BanItemConfig extends _JsonConfig<BanItemData> {
     public BanItemConfig() {
         super(file, """
                 {
-                    "enable": true,
+                    "enable": false,
                     "msg": "ban.item.deny",
                     "bannedItems": [
                         "minecraft:bedrock"

@@ -10,7 +10,7 @@ public class BlackListConfig extends _JsonConfig<BlackListData> {
     public BlackListConfig() {
         super(filePath, """
                 {
-                    "enable": true,
+                    "enable": false,
                     "allowedMode": false,
                     "msg": "blacklist.deny",
                     "list": []
